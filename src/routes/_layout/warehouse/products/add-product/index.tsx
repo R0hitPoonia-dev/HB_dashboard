@@ -118,20 +118,22 @@ function Addproduct() {
     }
   };
 
-  if (addNewProductHelper.isSuccess) {
-    toast({
-      title: "Product Added Successfully",
-      duration: 2500,
-    });
-    setProduct(newProduct);
-  }
-  if (addNewProductHelper.isError) {
-    toast({
-      title: "Error Adding Product",
-      description: JSON.stringify(addNewProductHelper.error),
-      duration: 2500,
-    });
-  }
+  useEffect(() => {
+    if (addNewProductHelper.isSuccess) {
+      toast({
+        title: "Product Added Successfully",
+        duration: 2500,
+      });
+      setProduct(newProduct);
+    }
+    if (addNewProductHelper.isError) {
+      toast({
+        title: "Error Adding Product",
+        description: JSON.stringify(addNewProductHelper.error),
+        duration: 2500,
+      });
+    }
+  }, [addNewProductHelper]);
 
   return (
     <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8 mb-5">
@@ -204,8 +206,11 @@ function Addproduct() {
                     <Textarea
                       id="description"
                       value={product.description}
-                      onChange={() => {
-                        handleInputChange;
+                      onChange={(e) => {
+                        setProduct((prev) => ({
+                          ...prev,
+                          [e.target.id]: e.target.value,
+                        }));
                       }}
                       placeholder="Write discription for your product..."
                       className="min-h-32"
@@ -237,6 +242,7 @@ function Addproduct() {
                           <Input
                             id={`stock-${index}-color`}
                             value={Variant.color}
+                            type="text"
                             onChange={(e) =>
                               handleVariantChange(
                                 index,
@@ -251,11 +257,12 @@ function Addproduct() {
                           <Input
                             id={`stock-${index}-quantity`}
                             value={Variant.stock}
+                            type="number"
                             onChange={(e) =>
                               handleVariantChange(
                                 index,
                                 "stock",
-                                parseInt(e.target.value, 10)
+                                e.target.value
                               )
                             }
                             placeholder="Enter quantity"
