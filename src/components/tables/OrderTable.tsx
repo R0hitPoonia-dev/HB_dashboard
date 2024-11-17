@@ -40,7 +40,7 @@ export const orderColumns: ColumnDef<Order>[] = [
     accessorKey: "id",
     header: "Order ID",
     cell: ({ row }) => <div>{row.getValue("id")}</div>,
-    enableSorting: false, // Usually, IDs are not sorted
+    enableSorting: true, // Usually, IDs are not sorted
   },
   {
     accessorKey: "email",

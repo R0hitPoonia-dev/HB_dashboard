@@ -11,7 +11,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import React from "react";
+import React, { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { CardWrapper } from "@/components/card-wrapper";
 
@@ -21,6 +21,7 @@ export const Route = createFileRoute("/_layout-1/login")({
   }),
   beforeLoad: ({ context, search }) => {
     if (context.auth.isAuthenticated) {
+      console.log(context.auth);
       throw redirect({ to: search.redirect || "/" });
     }
   },
@@ -69,17 +70,23 @@ function LoginPage() {
     await navigate({
       to: `${search.redirect ? search.redirect : "/"}`,
     });
+    console.log("debug1");
     reset();
     setLoad(false);
   };
 
+  useEffect(() => {
+    setLoad(false);
+  });
+
   React.useEffect(() => {
+    console.log("useEffect:", JSON.stringify(auth));
     if (auth.isAuthenticated && search.redirect) {
       navigate({
         to: search.redirect,
       });
     }
-  }, [auth.isAuthenticated, search.redirect, load]);
+  }, [auth, search.redirect, load]);
 
   return (
     <div className="flex h-screen justify-center items-center">

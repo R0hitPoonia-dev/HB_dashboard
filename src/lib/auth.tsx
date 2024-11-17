@@ -22,7 +22,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [token, setToken] = React.useState<string | null>(getStoredToken());
   const [loading, setLoading] = React.useState<boolean>(true);
   // const [isAuthenticated, setIsAuthenticated] =
-  // React.useState<boolean>(!!token);
+  //   React.useState<boolean>(!!token);
   const isAuthenticated = !!token;
   const [user, setUser] = React.useState<{
     name: string;
@@ -53,7 +53,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // }
 
   const handleGetUser = async () => {
-    setLoading(true);
     setToken(getStoredToken());
     try {
       const result = await getUser(null);
@@ -62,8 +61,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     } catch (error) {
       console.error(error);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -73,6 +70,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(null);
       setStoredToken(null);
       setToken(null);
+      // setIsAuthenticated(false);
       await logoutUser();
     } catch (error) {
       console.error(error);
@@ -96,19 +94,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     async ({ email, pass }: { email: string; pass: string }) => {
       try {
         setLoading(true);
-        await loginUser({ email: email, password: pass });
+        const lu = await loginUser({ email: email, password: pass });
         if (loginUserHelper.isSuccess && loginUserHelper.data) {
-          await getUser(null);
+          const gu = await getUser(null);
           if (getUserHelper.isSuccess && getUserHelper.data)
-            console.log(getUserHelper.data);
+            console.log("User", gu.data);
           setUser({
             name: loginUserHelper.data.data.name,
             profilePhoto: loginUserHelper.data.data.profilePhoto,
           });
-          // const token = loginUserHelper.data.token;
-          // setStoredToken(token);
-          // setToken(token);
+          const token = lu.data.token;
+          setStoredToken(token);
+          setToken(token);
+          console.log("authenticated");
+
           // setIsAuthenticated(true);
+          setLoading(false);
         }
       } catch (error) {
         console.error(error);
@@ -132,7 +133,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // );
   React.useEffect(() => {
     handleGetUser();
-  }, [isAuthenticated]);
+    console.log(
+      "authUseEffect",
+      JSON.stringify({ token, isAuthenticated, user, loading })
+    );
+  }, [isAuthenticated, token, loading]);
 
   return (
     <AuthContext.Provider
