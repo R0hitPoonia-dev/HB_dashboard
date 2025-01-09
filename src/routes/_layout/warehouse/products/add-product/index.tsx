@@ -43,7 +43,6 @@ import {
   useGetCategoriesQuery,
 } from "@/redux/api/authApi";
 import { toast } from "@/hooks/use-toast";
-import { DropdownMenu } from "@/components/ui/dropdown-menu";
 
 export const Route = createFileRoute(
   "/_layout/warehouse/products/add-product/"
