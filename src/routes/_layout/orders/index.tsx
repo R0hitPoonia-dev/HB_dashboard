@@ -21,12 +21,16 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-  DropdownMenuRadioGroup, DropdownMenuRadioItem 
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
 } from "@/components/ui/dropdown-menu";
 import { Copy, MoreVertical, Truck } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "@/hooks/use-toast";
-import { useGetOrdersWithFilerMutation, useUpdateOrderStatusMutation } from "@/redux/api/authApi";
+import {
+  useGetOrdersWithFilerMutation,
+  useUpdateOrderStatusMutation,
+} from "@/redux/api/authApi";
 
 export const Route = createFileRoute("/_layout/orders/")({
   component: OrderPage,
@@ -38,7 +42,10 @@ function OrderPage() {
   const [loading, setLoading] = React.useState(false);
   const [selectedOrder, setSelectedOrder] = React.useState<Order | null>(null);
   const [rowCount, setRowCount] = React.useState(100);
-  const [changeStatus,setChangeStatus] = React.useState<{id:string;status:string}>({id:"",status:""});
+  const [changeStatus, setChangeStatus] = React.useState<{
+    id: string;
+    status: string;
+  }>({ id: "", status: "" });
   const [pagination, setPagination] = React.useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10,
@@ -46,7 +53,8 @@ function OrderPage() {
 
   const [orderWithFilter, orderWithFilterHelper] =
     useGetOrdersWithFilerMutation();
-  const [changeOrderStatus,changeOrderStatusHelper] = useUpdateOrderStatusMutation();
+  const [changeOrderStatus, changeOrderStatusHelper] =
+    useUpdateOrderStatusMutation();
   const datafetching = async () => {
     try {
       // Fetch the order data with the current pagination and sorting
@@ -63,16 +71,13 @@ function OrderPage() {
   };
 
   React.useEffect(() => {
-    if(changeOrderStatusHelper.isSuccess)
+    if (changeOrderStatusHelper.isSuccess)
       toast({
-    title: "Order Status Updated",
-    description: "Order status updated successfully",
-    duration: 3000,
-    })
-
-  
-  },[changeOrderStatusHelper])
-
+        title: "Order Status Updated",
+        description: "Order status updated successfully",
+        duration: 3000,
+      });
+  }, [changeOrderStatusHelper]);
 
   React.useEffect(() => {
     const fetchData = async () => {
@@ -141,9 +146,9 @@ function OrderPage() {
                 and Insightful Analysis.
               </CardDescription>
             </CardHeader>
-            <CardFooter>
+            {/* <CardFooter>
               <Button>Create New Order</Button>
-            </CardFooter>
+            </CardFooter> */}
           </Card>
           <Card x-chunk="dashboard-05-chunk-1">
             <CardHeader className="pb-2">
@@ -224,13 +229,32 @@ function OrderPage() {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
-                    <DropdownMenuRadioGroup value={changeStatus.status} onValueChange={(e) => {setChangeStatus({id:selectedOrder.id,status:e}); changeOrderStatus({id:selectedOrder.id,status:e})}}>
-                      <DropdownMenuRadioItem value="confirmed">confirmed</DropdownMenuRadioItem>
-                      <DropdownMenuRadioItem value="processing">processing</DropdownMenuRadioItem>
-                      <DropdownMenuRadioItem value="shipped">shipped</DropdownMenuRadioItem>
-                      <DropdownMenuRadioItem value="delivered">delivered</DropdownMenuRadioItem>
-                      <DropdownMenuRadioItem value="cancelled">cancelled</DropdownMenuRadioItem>
-                    </DropdownMenuRadioGroup>
+                      <DropdownMenuRadioGroup
+                        value={changeStatus.status}
+                        onValueChange={(e) => {
+                          setChangeStatus({ id: selectedOrder.id, status: e });
+                          changeOrderStatus({
+                            id: selectedOrder.id,
+                            status: e,
+                          });
+                        }}
+                      >
+                        <DropdownMenuRadioItem value="confirmed">
+                          confirmed
+                        </DropdownMenuRadioItem>
+                        <DropdownMenuRadioItem value="processing">
+                          processing
+                        </DropdownMenuRadioItem>
+                        <DropdownMenuRadioItem value="shipped">
+                          shipped
+                        </DropdownMenuRadioItem>
+                        <DropdownMenuRadioItem value="delivered">
+                          delivered
+                        </DropdownMenuRadioItem>
+                        <DropdownMenuRadioItem value="cancelled">
+                          cancelled
+                        </DropdownMenuRadioItem>
+                      </DropdownMenuRadioGroup>
                     </DropdownMenuContent>
                   </DropdownMenu>
                   <DropdownMenu>
@@ -253,36 +277,35 @@ function OrderPage() {
                 <div className="grid gap-3">
                   <div className="font-semibold">Order Details</div>
                   <ul className="grid gap-3">
-                    <li className="flex items-center justify-between">
-                      <span className="text-muted-foreground">
-                        Glimmer Lamps x <span>2</span>
-                      </span>
-                      <span>$250.00</span>
-                    </li>
-                    <li className="flex items-center justify-between">
-                      <span className="text-muted-foreground">
-                        Aqua Filters x <span>1</span>
-                      </span>
-                      <span>$49.00</span>
-                    </li>
+                    {selectedOrder.orderDetails.map((detail, index) => (
+                      <li
+                        key={index}
+                        className="flex items-center justify-between"
+                      >
+                        <span className="text-muted-foreground">
+                          {detail.product} x <span>{detail.quantity}</span>
+                        </span>
+                        <span>₹{detail.price.toFixed(2)}</span>
+                      </li>
+                    ))}
                   </ul>
                   <Separator className="my-2" />
                   <ul className="grid gap-3">
                     <li className="flex items-center justify-between">
                       <span className="text-muted-foreground">Subtotal</span>
-                      <span>${selectedOrder.subtotal}</span>
+                      <span>₹{selectedOrder.subtotal}</span>
                     </li>
                     <li className="flex items-center justify-between">
                       <span className="text-muted-foreground">Shipping</span>
-                      <span>${selectedOrder.shipping}</span>
+                      <span>₹{selectedOrder.shipping}</span>
                     </li>
                     <li className="flex items-center justify-between">
                       <span className="text-muted-foreground">Tax</span>
-                      <span>${selectedOrder.tax}</span>
+                      <span>₹{selectedOrder.tax}</span>
                     </li>
                     <li className="flex items-center justify-between font-semibold">
                       <span className="text-muted-foreground">Total</span>
-                      <span>${selectedOrder.total}</span>
+                      <span>₹{selectedOrder.total}</span>
                     </li>
                   </ul>
                 </div>

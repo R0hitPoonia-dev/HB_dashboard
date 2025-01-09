@@ -134,7 +134,7 @@ function Addproduct() {
         duration: 2500,
       });
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [addNewProductHelper]);
 
   return (
@@ -335,37 +335,68 @@ function Addproduct() {
                     </Select>
                   </div>
                   <div className="grid gap-3">
-                    <Label htmlFor="subcategory">Subcategory (optional)</Label>
-                    <div className="border rounded-md p-2">
+                    <label
+                      htmlFor="subcategory"
+                      className="text-sm font-medium text-gray-700"
+                    >
+                      Subcategory (optional)
+                    </label>
+                    <div className="border rounded-md p-3">
                       {categories.map((category) => {
                         if (category.name === product.category) {
-                          return category.subCategory?.map((subcategory, index) => (
-                            <DropdownMenu key={index}>
-                              
-                              <input
-                                type="checkbox"
-                                id={`subcategory-${subcategory}`}
-                                value={subcategory}
-                                checked={product.subCategory?.includes(subcategory) || false}
-                                onChange={(e) => {
-                                  const isChecked = e.target.checked;
-                                  setProduct((prev) => ({
-                                    ...prev,
-                                    subCategory: isChecked
-                                      ? [...(prev.subCategory || []), subcategory]
-                                      : prev.subCategory?.filter((sc) => sc !== subcategory),
-                                  }));
-                                }}
-                              />
-                              <label htmlFor={`subcategory-${subcategory}`}>{subcategory}</label>
-                              <br />
-                            </DropdownMenu>
-                          ));
+                          return (
+                            <div key={category.name}>
+                              <fieldset>
+                                <legend className="text-sm font-semibold text-gray-50 mb-2">
+                                  Subcategories
+                                </legend>
+                                {category.subCategory?.map(
+                                  (subcategory, index) => (
+                                    <div
+                                      key={index}
+                                      className="flex items-center space-x-2 mb-2"
+                                    >
+                                      <input
+                                        type="checkbox"
+                                        id={`subcategory-${subcategory}`}
+                                        value={subcategory}
+                                        checked={
+                                          product.subCategory?.includes(
+                                            subcategory
+                                          ) || false
+                                        }
+                                        onChange={(e) => {
+                                          const isChecked = e.target.checked;
+                                          setProduct((prev) => ({
+                                            ...prev,
+                                            subCategory: isChecked
+                                              ? [
+                                                  ...(prev.subCategory || []),
+                                                  subcategory,
+                                                ]
+                                              : prev.subCategory?.filter(
+                                                  (sc) => sc !== subcategory
+                                                ),
+                                          }));
+                                        }}
+                                        className="h-4 w-4 text-blue-600 border-gray-300 rounded"
+                                      />
+                                      <label
+                                        htmlFor={`subcategory-${subcategory}`}
+                                        className="text-sm text-gray-50"
+                                      >
+                                        {subcategory}
+                                      </label>
+                                    </div>
+                                  )
+                                )}
+                              </fieldset>
+                            </div>
+                          );
                         }
                       })}
                     </div>
                   </div>
-
                 </div>
               </CardContent>
             </Card>
