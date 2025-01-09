@@ -43,6 +43,7 @@ import {
   useGetCategoriesQuery,
 } from "@/redux/api/authApi";
 import { toast } from "@/hooks/use-toast";
+import { DropdownMenu } from "@/components/ui/dropdown-menu";
 
 export const Route = createFileRoute(
   "/_layout/warehouse/products/add-product/"
@@ -60,7 +61,7 @@ function Addproduct() {
     productName: "",
     description: "",
     variants: [],
-    subCategory: "",
+    subCategory: [],
     price: 0,
     qtyavailable: 0,
     category: "",
@@ -84,7 +85,7 @@ function Addproduct() {
       setCategories(getCategories.data.categories);
       console.log(categories);
     }
-  }, [getCategories.data]);
+  }, [categories, getCategories.data, getCategories.isSuccess]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
@@ -133,6 +134,7 @@ function Addproduct() {
         duration: 2500,
       });
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [addNewProductHelper]);
 
   return (
@@ -334,32 +336,36 @@ function Addproduct() {
                   </div>
                   <div className="grid gap-3">
                     <Label htmlFor="subcategory">Subcategory (optional)</Label>
-                    <Select
-                      onValueChange={(value) => {
-                        setProduct((pre) => ({ ...pre, subCategory: value }));
-                      }}
-                    >
-                      <SelectTrigger
-                        id="subcategory"
-                        aria-label="Select subcategory"
-                      >
-                        <SelectValue placeholder="Select subcategory" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {categories.map((category) => {
-                          if (category.name === product.category) {
-                            return category.subCategory?.map(
-                              (subcategory, index) => (
-                                <SelectItem key={index} value={subcategory}>
-                                  {subcategory}
-                                </SelectItem>
-                              )
-                            );
-                          }
-                        })}
-                      </SelectContent>
-                    </Select>
+                    <div className="border rounded-md p-2">
+                      {categories.map((category) => {
+                        if (category.name === product.category) {
+                          return category.subCategory?.map((subcategory, index) => (
+                            <DropdownMenu key={index}>
+                              
+                              <input
+                                type="checkbox"
+                                id={`subcategory-${subcategory}`}
+                                value={subcategory}
+                                checked={product.subCategory?.includes(subcategory) || false}
+                                onChange={(e) => {
+                                  const isChecked = e.target.checked;
+                                  setProduct((prev) => ({
+                                    ...prev,
+                                    subCategory: isChecked
+                                      ? [...(prev.subCategory || []), subcategory]
+                                      : prev.subCategory?.filter((sc) => sc !== subcategory),
+                                  }));
+                                }}
+                              />
+                              <label htmlFor={`subcategory-${subcategory}`}>{subcategory}</label>
+                              <br />
+                            </DropdownMenu>
+                          ));
+                        }
+                      })}
+                    </div>
                   </div>
+
                 </div>
               </CardContent>
             </Card>

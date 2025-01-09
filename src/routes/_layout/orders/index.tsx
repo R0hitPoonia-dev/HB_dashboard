@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createFileRoute } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,11 +21,12 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuRadioGroup, DropdownMenuRadioItem 
 } from "@/components/ui/dropdown-menu";
 import { Copy, MoreVertical, Truck } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "@/hooks/use-toast";
-import { useGetOrdersWithFilerMutation } from "@/redux/api/authApi";
+import { useGetOrdersWithFilerMutation, useUpdateOrderStatusMutation } from "@/redux/api/authApi";
 
 export const Route = createFileRoute("/_layout/orders/")({
   component: OrderPage,
@@ -36,6 +38,7 @@ function OrderPage() {
   const [loading, setLoading] = React.useState(false);
   const [selectedOrder, setSelectedOrder] = React.useState<Order | null>(null);
   const [rowCount, setRowCount] = React.useState(100);
+  const [changeStatus,setChangeStatus] = React.useState<{id:string;status:string}>({id:"",status:""});
   const [pagination, setPagination] = React.useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10,
@@ -43,6 +46,7 @@ function OrderPage() {
 
   const [orderWithFilter, orderWithFilterHelper] =
     useGetOrdersWithFilerMutation();
+  const [changeOrderStatus,changeOrderStatusHelper] = useUpdateOrderStatusMutation();
   const datafetching = async () => {
     try {
       // Fetch the order data with the current pagination and sorting
@@ -57,6 +61,19 @@ function OrderPage() {
       });
     }
   };
+
+  React.useEffect(() => {
+    if(changeOrderStatusHelper.isSuccess)
+      toast({
+    title: "Order Status Updated",
+    description: "Order status updated successfully",
+    duration: 3000,
+    })
+
+  
+  },[changeOrderStatusHelper])
+
+
   React.useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -77,7 +94,7 @@ function OrderPage() {
             customer: order.userId.name,
             email: order.userId.email,
             phone: "", // Add phone if available in the response
-            status: order.status === "active" ? "Order Placed" : "Cancelled",
+            status: order.status,
             lastUpdated: new Date(order.createdAt).toISOString(),
             orderDetails: Object.values(order.cart.products).map(
               (item: any) => ({
@@ -206,11 +223,14 @@ function OrderPage() {
                         </span>
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem>Edit</DropdownMenuItem>
-                      <DropdownMenuItem>Export</DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem>Trash</DropdownMenuItem>
+                    <DropdownMenuContent>
+                    <DropdownMenuRadioGroup value={changeStatus.status} onValueChange={(e) => {setChangeStatus({id:selectedOrder.id,status:e}); changeOrderStatus({id:selectedOrder.id,status:e})}}>
+                      <DropdownMenuRadioItem value="confirmed">confirmed</DropdownMenuRadioItem>
+                      <DropdownMenuRadioItem value="processing">processing</DropdownMenuRadioItem>
+                      <DropdownMenuRadioItem value="shipped">shipped</DropdownMenuRadioItem>
+                      <DropdownMenuRadioItem value="delivered">delivered</DropdownMenuRadioItem>
+                      <DropdownMenuRadioItem value="cancelled">cancelled</DropdownMenuRadioItem>
+                    </DropdownMenuRadioGroup>
                     </DropdownMenuContent>
                   </DropdownMenu>
                   <DropdownMenu>
