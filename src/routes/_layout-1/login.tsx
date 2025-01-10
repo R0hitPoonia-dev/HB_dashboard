@@ -11,7 +11,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import React, { useEffect } from "react";
+import React from "react";
 import { Button } from "@/components/ui/button";
 import { CardWrapper } from "@/components/card-wrapper";
 
@@ -55,7 +55,6 @@ function LoginPage() {
     },
   });
   const {
-    reset,
     handleSubmit,
     formState: { isSubmitSuccessful },
   } = form;
