@@ -1,7 +1,6 @@
 // import { TypeOf, z } from "zod";
 
 export interface adminSchema {
-	// uid: number;
 	name: string;
 	email: string;
 	password: string;
@@ -10,6 +9,9 @@ export interface adminSchema {
 }
 
 export interface getUserResponse {
+	name: string;
+	email: string;
+
 	status: number;
 	message: string;
 	adminData: adminSchema;

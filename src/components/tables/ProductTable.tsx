@@ -210,7 +210,7 @@ export const productColumns: ColumnDef<Product>[] = [
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            {/* <DropdownMenuLabel>Actions</DropdownMenuLabel> */}
             <DropdownMenuItem
               onClick={() => navigator.clipboard.writeText(product.productName)}
             >
@@ -491,9 +491,9 @@ const ProductTable = () => {
                   </option>
                 ))}
               </select> */}
-              <span>{`sorting: ${JSON.stringify(sorting)}`}</span>
+              {/* <span>{`sorting: ${JSON.stringify(sorting)}`}</span>
               <span>{`columnFilters: ${JSON.stringify(columnFilters)}`}</span>
-              <span>{`rowSelection: ${JSON.stringify(rowSelection)}`}</span>
+              <span>{`rowSelection: ${JSON.stringify(rowSelection)}`}</span> */}
             </div>
           </CardFooter>
         </Card>

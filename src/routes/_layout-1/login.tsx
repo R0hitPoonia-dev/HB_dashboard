@@ -66,27 +66,20 @@ function LoginPage() {
   const onSubmit: SubmitHandler<LoginInput> = async (data) => {
     setLoad(true);
     await auth.login({ email: data.email, pass: data.password });
-    await router.invalidate();
-    await navigate({
-      to: `${search.redirect ? search.redirect : "/"}`,
-    });
-    console.log("debug1");
-    reset();
-    setLoad(false);
+    await router.invalidate(); // Invalidate the router to ensure state updates
+
+    // Pass an object to navigate with a 'to' property
+    navigate({ to: search.redirect || "/dashboard" }); // Corrected navigation method
+    setLoad(false); // Set load false after processing
   };
 
-  useEffect(() => {
-    setLoad(false);
-  });
-
+  // Add a useEffect to handle the state change
   React.useEffect(() => {
-    console.log("useEffect:", JSON.stringify(auth));
-    if (auth.isAuthenticated && search.redirect) {
-      navigate({
-        to: search.redirect,
-      });
+    if (auth.isAuthenticated) {
+      console.log("Authenticated, navigating to dashboard...");
+      navigate({ to: search.redirect || "/dashboard" }); // Redirect after successful login
     }
-  }, [auth, search.redirect, load]);
+  }, [auth.isAuthenticated, search.redirect, navigate]);
 
   return (
     <div className="flex h-screen justify-center items-center">
